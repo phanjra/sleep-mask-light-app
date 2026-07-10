@@ -1,0 +1,243 @@
+var dt=Object.defineProperty;var ht=(n,t,e)=>t in n?dt(n,t,{enumerable:!0,configurable:!0,writable:!0,value:e}):n[t]=e;var l=(n,t,e)=>ht(n,typeof t!="symbol"?t+"":t,e);(function(){const t=document.createElement("link").relList;if(t&&t.supports&&t.supports("modulepreload"))return;for(const i of document.querySelectorAll('link[rel="modulepreload"]'))s(i);new MutationObserver(i=>{for(const r of i)if(r.type==="childList")for(const a of r.addedNodes)a.tagName==="LINK"&&a.rel==="modulepreload"&&s(a)}).observe(document,{childList:!0,subtree:!0});function e(i){const r={};return i.integrity&&(r.integrity=i.integrity),i.referrerPolicy&&(r.referrerPolicy=i.referrerPolicy),i.crossOrigin==="use-credentials"?r.credentials="include":i.crossOrigin==="anonymous"?r.credentials="omit":r.credentials="same-origin",r}function s(i){if(i.ep)return;i.ep=!0;const r=e(i);fetch(i.href,r)}})();const T=1,E=100,x=50,Q=1,Z=60,tt=10;function v(n){const t=Math.round(Number(n));return Number.isFinite(t)?Math.max(T,Math.min(E,t)):x}function $(n){const t=n.trim();if(t==="")return null;const e=Number(t);return Number.isFinite(e)?Math.round(e):null}function K(n){const t=Math.round(Number(n));return Number.isFinite(t)?Math.max(Q,Math.min(Z,t)):tt}const y=["mon","tue","wed","thu","fri","sat","sun"],Y=["sun","mon","tue","wed","thu","fri","sat"],ut={sun:"S",mon:"M",tue:"T",wed:"W",thu:"T",fri:"F",sat:"S"},X={mon:"Monday",tue:"Tuesday",wed:"Wednesday",thu:"Thursday",fri:"Friday",sat:"Saturday",sun:"Sunday"},et="sml-draft-schedule-v2";function M(){return{enabled:!0,time:"07:00",prewindowMin:20,pwmMax:x,postHoldMin:20}}function G(){return Object.fromEntries(y.map(n=>[n,M()]))}function mt(){try{const n=localStorage.getItem(et);if(n){const e=JSON.parse(n);return V(e)}const t=localStorage.getItem("sml-draft-schedule-v1");if(t){const e=JSON.parse(t);return V(e)}return null}catch{return null}}function V(n){const t=G();for(const e of y){const s=n[e];s&&(t[e]={enabled:s.enabled,time:s.time,prewindowMin:s.prewindowMin??20,pwmMax:v(s.pwmMax??x),postHoldMin:s.postHoldMin??20})}return t}function w(n){localStorage.setItem(et,JSON.stringify(n))}function O(n){const t=G();for(const e of n){const s=e.match(/^DAY\s+(mon|tue|wed|thu|fri|sat|sun)\s+(ON|OFF)\s+(\d{2}:\d{2})\s+(\d+)\s+(\d+)(?:\s+(\d+))?/i);if(!s)continue;const i=s[1].toLowerCase();t[i]={enabled:s[2].toUpperCase()==="ON",time:s[3],prewindowMin:Number(s[4]),pwmMax:v(Number(s[5])),postHoldMin:s[6]?Number(s[6]):20}}return t}function pt(n,t){return y.every(e=>JSON.stringify(n[e])===JSON.stringify(t[e]))}function ft(n){return JSON.stringify({enabled:n.enabled,time:n.time,prewindowMin:n.prewindowMin,pwmMax:n.pwmMax,postHoldMin:n.postHoldMin})}function R(n,t){return y.indexOf(n)-y.indexOf(t)}function st(n){if(n.enabled)return!1;const t=M();return n.time===t.time&&n.prewindowMin===t.prewindowMin&&n.pwmMax===t.pwmMax&&n.postHoldMin===t.postHoldMin}function L(n){const t=new Map;for(const i of y){const r=ft(n[i]),a=t.get(r)??[];a.push(i),t.set(r,a)}const e=[];let s=0;for(const i of t.values()){i.sort(R);const r={...n[i[0]]};e.push({id:`alarm-${s++}`,days:i,slot:r})}return e.sort((i,r)=>{const a=i.slot.time.localeCompare(r.slot.time);return a!==0?a:R(i.days[0],r.days[0])}),e}function j(n){return L(n).filter(t=>!st(t.slot))}const gt=new Set(["mon","tue","wed","thu","fri"]),vt=new Set(["sat","sun"]);function yt(n){if(n.length===0)return"No days";const t=[...n].sort(R);return t.length===7?"Every day":t.length===5&&t.every(e=>gt.has(e))?"Weekdays":t.length===2&&t.every(e=>vt.has(e))?"Weekend":t.length===1?X[t[0]]:t.map(e=>X[e].slice(0,3)).join(", ")}function bt(n){return`${n.pwmMax}% brightness · ${n.prewindowMin} min ramp`}function wt(n,t,e){const s={...n};for(const i of t.days)s[i]={...s[i],enabled:e};return s}function St(n,t,e,s){const i={...n},r=new Set(e);for(const a of t)r.has(a)||(i[a]={...M(),enabled:!1});for(const a of e)i[a]={...s};return i}function z(n,t){const e={...n};for(const s of t.days)e[s]={...M(),enabled:!1};return e}function Tt(n){const t=y.find(c=>!n[c].enabled),e=t??"sat",s={...M(),enabled:!0,time:t?"07:00":"08:00"},i={...n,[e]:s},r=L(i),a=r.find(c=>c.days.includes(e)&&c.slot.time===s.time);return{schedule:i,groupId:(a==null?void 0:a.id)??r[r.length-1].id}}const B="6e400001-b5a3-f393-e0a9-e50e24dcca9e",Et="6e400002-b5a3-f393-e0a9-e50e24dcca9e",Lt="6e400003-b5a3-f393-e0a9-e50e24dcca9e",q=200,N=3e3;class Mt{constructor(){l(this,"device",null);l(this,"server",null);l(this,"rxChar",null);l(this,"buffer","");l(this,"queue",[]);l(this,"notifyWaiters",[]);l(this,"_connected",!1);l(this,"opChain",Promise.resolve());l(this,"onDisconnectCallback",null);l(this,"disconnectUserInitiated",!1)}get connected(){return this._connected}drainQueue(){const t=[...this.queue];return this.queue=[],t}setOnDisconnect(t){this.onDisconnectCallback=t}async connect(){var i;if(!navigator.bluetooth)throw new Error("Web Bluetooth is not available in this browser.");this.device=await navigator.bluetooth.requestDevice({filters:[{services:[B]}],optionalServices:[B]}),this.device.addEventListener("gattserverdisconnected",()=>{var a;this._connected=!1;const r=this.disconnectUserInitiated;this.disconnectUserInitiated=!1,(a=this.onDisconnectCallback)==null||a.call(this,r)});const t=await((i=this.device.gatt)==null?void 0:i.connect());if(!t)throw new Error("GATT connect failed");this.server=t;const e=await this.server.getPrimaryService(B);this.rxChar=await e.getCharacteristic(Et);const s=await e.getCharacteristic(Lt);await s.startNotifications(),s.addEventListener("characteristicvaluechanged",r=>{const c=r.target.value;if(!c)return;const u=new TextDecoder().decode(c);for(this.buffer+=u;this.buffer.includes(`
+`);){const d=this.buffer.indexOf(`
+`),m=this.buffer.slice(0,d).trim();if(this.buffer=this.buffer.slice(d+1),!m)continue;const p=this.notifyWaiters.shift();p?p(m):this.queue.push(m)}}),this._connected=!0}async withLock(t){const e=this.opChain.then(()=>t());return this.opChain=e.then(()=>{},()=>{}),e}async writeLine(t){if(!this.rxChar)throw new Error("Not connected");const e=new TextEncoder().encode(t+`
+`);await this.rxChar.writeValueWithoutResponse(e)}async waitForLine(t){return this.queue.length?this.queue.shift():new Promise(e=>{const s=window.setTimeout(()=>{const r=this.notifyWaiters.indexOf(i);r>=0&&this.notifyWaiters.splice(r,1),e(null)},t),i=r=>{clearTimeout(s),e(r)};this.notifyWaiters.push(i)})}async send(t){return this.withLock(async()=>t?(await this.writeLine(t),this.collectLines(q,N)):this.collectLines(q,N))}async sendAndCollect(t,e=q,s=N,i){return this.withLock(async()=>(t&&await this.writeLine(t),this.collectLines(e,s,i)))}async collectLines(t,e,s){const i=[],r=Date.now()+e;for(;Date.now()<r;){const a=r-Date.now(),c=await this.waitForLine(Math.min(t,a));if(c===null){if(i.length)return i;continue}if(i.push(c),s!=null&&s(c,i))return i}return i}disconnect(){var t;this.disconnectUserInitiated=!0,(t=this.server)==null||t.disconnect(),this._connected=!1,this.device=null,this.server=null,this.rxChar=null,this.queue=[],this.notifyWaiters=[],this.opChain=Promise.resolve()}}const it=250,Dt=8e3,At=5e3,$t=200;function nt(n){const t=`OK ${n}`;return e=>e===t||e.startsWith(`${t} `)}function Ct(){const n=new Date(new Date().getFullYear(),0,1),t=new Date(new Date().getFullYear(),6,1),e=n.getTimezoneOffset(),s=t.getTimezoneOffset(),i=-e*60,a=e!==s?-Math.min(e,s)*60:0;return`TZ_OFFSET ${i} ${a}`}function _t(){const n=new Date,t=e=>String(e).padStart(2,"0");return`TIME ${n.getFullYear()}-${t(n.getMonth()+1)}-${t(n.getDate())} ${t(n.getHours())}:${t(n.getMinutes())}:${t(n.getSeconds())}`}function C(n){return n==="REQ_TIME"||n.startsWith("REQ_TIME ")}async function It(n){let t=n.drainQueue().some(C);if((await n.send(Ct())).some(C)&&(t=!0),!t){const s=Date.now()+2e3;for(;Date.now()<s;){const i=Math.max(100,Math.min($t,s-Date.now())),r=await n.sendAndCollect("",i,Math.min(600,s-Date.now()),a=>C(a));if(r.some(C)){t=!0;break}if(!r.length)break}}}async function xt(n){await n.send(_t())}async function W(n){return await xt(n),Bt(n)}async function P(n){const t=await n.sendAndCollect("SCHED_GET",it,Dt,nt("SCHED_GET"));if(!t.some(e=>e.startsWith("OK SCHED_GET")))throw new Error("SCHED_GET failed");return t}async function kt(n,t){const e=Object.keys(t);for(const i of e){const r=t[i];let a;r.enabled?a=`SCHED_DAY ${i} ${r.time} ${r.prewindowMin} ${r.pwmMax} ${r.postHoldMin}`:a=`SCHED_DAY ${i} OFF`;const c=await n.send(a);if(!c.some(u=>u.startsWith("OK SCHED_DAY")))throw new Error(`Failed to set ${i}: ${c.join(" ")}`)}if(!(await n.send("SAVE")).some(i=>i.includes("SAVE ok")))throw new Error("SAVE failed")}function Ot(n){const t={};for(const e of n)e.startsWith("RTC: ")&&(t.rtc=e.slice(5)),e.startsWith("TODAY: ")&&(t.today=e.slice(7).trim()),e.startsWith("TODAY_ALARM: ")&&(t.todayAlarm=e.slice(13)),e.startsWith("ALARM(daily): ")&&(t.alarmDaily=e.slice(14)),e.startsWith("ALARM_AT: ")&&(t.alarmAt=e.slice(10)),e.startsWith("NEXT_RAMP: ")&&(t.nextRamp=e.slice(11)),e.startsWith("WAKE_CAUSE: ")&&(t.wakeCause=e.slice(12)),e.startsWith("BOOT_PATH: ")&&(t.bootPath=e.slice(11)),e.startsWith("NVM_OK: ")&&(t.nvmOk=e.includes("yes")),e.startsWith("PHASE: ")&&(t.phase=e.slice(7)),e.startsWith("TIME_SYNC_AUTO: ")&&(t.timeSync=e.slice(16)),e.startsWith("TIME_TRUSTED: ")&&(t.timeTrusted=e.includes("yes")),e.startsWith("PRE(min): ")&&(t.preMin=e.slice(10)),e.startsWith("POST_HOLD(min): ")&&(t.postHoldMin=e.slice(16));return t}async function Bt(n){const t=await n.sendAndCollect("STATUS_LITE",it,At,nt("STATUS_LITE"));if(t.some(e=>e.includes("ERR unknown cmd: STATUS_LITE")))return{};if(!t.some(e=>e.startsWith("OK STATUS_LITE")))throw new Error("STATUS_LITE failed");return Ot(t)}async function qt(n,t,e){const s=await n.send(`LAMP_TEST ${t} ${e}`);if(!s.some(i=>i.startsWith("OK LAMP_TEST")))throw new Error(s.find(i=>i.startsWith("ERR"))??"LAMP_TEST failed")}async function Nt(n){const t=await n.send("LAMP_TEST_CANCEL");if(!t.some(e=>e==="OK LAMP_TEST_CANCEL"))throw new Error(t.find(e=>e.startsWith("ERR"))??"LAMP_TEST_CANCEL failed")}function U(){return typeof navigator<"u"&&!!navigator.bluetooth}function Wt(){return/iPad|iPhone|iPod/.test(navigator.userAgent)}function Pt(){return U()}function Rt(){return Wt()&&!U()}function Ht(n){if(!n)return!1;const t=n instanceof DOMException||n instanceof Error?n.name:"",e=n instanceof Error?n.message:String(n),s=e.toLowerCase();return!!(t==="AbortError"||t==="NotFoundError"||s.includes("cancel")||s.includes("abort")||s.includes("chooser")||s.includes("dismiss")||/^\d+$/.test(e.trim()))}function I(n){const t=n.match(/^(\d{1,2}):(\d{2})$/);if(!t)return{hour12:7,minute:0,period:"AM"};let e=Number(t[1]);const s=Math.max(0,Math.min(59,Number(t[2])));Number.isFinite(e)||(e=7),e=(e%24+24)%24;const i=e>=12?"PM":"AM";let r=e%12;return r===0&&(r=12),{hour12:r,minute:s,period:i}}function rt(n,t,e){let s=n%12;e==="PM"&&(s+=12),e==="AM"&&n===12&&(s=0),e==="PM"&&n===12&&(s=12);const i=Math.max(0,Math.min(59,Math.round(t)));return`${String(s).padStart(2,"0")}:${String(i).padStart(2,"0")}`}function H(n){const{hour12:t,minute:e,period:s}=I(n);return`${t}:${String(e).padStart(2,"0")} ${s}`}function Ft(n){const t=n.trim();if(!t)return null;const e=t.match(/^(\d{1,2}):(\d{2})\s*(AM|PM|am|pm)$/i);if(e){const i=Number(e[1]),r=Number(e[2]);if(i<1||i>12||r>59)return null;const a=e[3].toUpperCase()==="PM"?"PM":"AM";return rt(i,r,a)}const s=t.match(/^(\d{1,2}):(\d{2})$/);if(s){const i=Number(s[1]),r=Number(s[2]);return i>23||r>59?null:`${String(i).padStart(2,"0")}:${String(r).padStart(2,"0")}`}return null}const _=10;function Gt(n,t){n.querySelectorAll(".alarm-swipe").forEach(e=>{const s=e,i=s.dataset.alarmId;if(!i)return;const r=s.querySelector(".alarm-row-panel"),a=s.querySelector(".alarm-swipe-delete");if(!r)return;let c=0,u=0,d=0,m=!1,p=null,g=null,b=!1;const k=(o,h)=>{r.style.transition=h?"transform 0.22s ease":"none",r.style.transform=o===0?"":`translateX(${o}px)`,s.classList.toggle("open",o<=-44/2)},at=()=>{n.querySelectorAll(".alarm-swipe").forEach(o=>{const h=o;h.classList.remove("open");const f=h.querySelector(".alarm-row-panel");f&&(f.style.transition="",f.style.transform="")})},D=o=>{o<=-44?(at(),k(-88,!0),s.classList.add("open")):(k(0,!0),s.classList.remove("open"))};a==null||a.addEventListener("click",o=>{o.stopPropagation(),t.onDelete(i)});const ot=(o,h)=>{d=s.classList.contains("open")?-88:0,c=o,u=h,m=!0,p=null,r.style.transition="none"},lt=(o,h)=>{if(!m)return;const f=o-c,A=h-u;if(p||(Math.abs(f)>_||Math.abs(A)>_)&&(p=Math.abs(f)>Math.abs(A)?"x":"y"),p!=="x")return;let S=d+f;S>0&&(S=0),S<-88&&(S=-88),k(S,!1)},ct=(o,h)=>{if(!m)return;m=!1,g=null;const f=o-c,A=h-u;if(p==="x"){D(d+f),b=!0,window.setTimeout(()=>{b=!1},400);return}if(!(Math.abs(f)>=_||Math.abs(A)>=_)){if(s.classList.contains("open")){D(0);return}t.onTap(i),b=!0,window.setTimeout(()=>{b=!1},400)}};r.addEventListener("pointerdown",o=>{if(o.pointerType==="mouse"&&o.button!==0)return;const h=o.target;h.closest(".alarm-swipe-delete")||h.closest("[data-action='group-toggle']")&&!s.classList.contains("open")||(g=o.pointerId,r.setPointerCapture(o.pointerId),ot(o.clientX,o.clientY))}),r.addEventListener("pointermove",o=>{g===o.pointerId&&(lt(o.clientX,o.clientY),p==="x"&&o.preventDefault())}),r.addEventListener("pointerup",o=>{g===o.pointerId&&(r.hasPointerCapture(o.pointerId)&&r.releasePointerCapture(o.pointerId),ct(o.clientX,o.clientY))}),r.addEventListener("pointercancel",o=>{g===o.pointerId&&(m=!1,g=null,D(s.classList.contains("open")?-88:0))}),r.addEventListener("click",o=>{if(b){o.preventDefault();return}if(s.classList.contains("open")){o.preventDefault(),D(0);return}o.target.closest("[data-action='group-toggle']")||t.onTap(i)})}),n.dataset.alarmSwipeDismissBound||(n.dataset.alarmSwipeDismissBound="1",n.addEventListener("click",e=>{e.target.closest(".alarm-swipe")||F(n)},{capture:!0}))}function F(n){n.querySelectorAll(".alarm-swipe").forEach(t=>{const e=t;e.classList.remove("open");const s=e.querySelector(".alarm-row-panel");s&&(s.style.transition="",s.style.transform="")})}const Ut=Array.from({length:12},(n,t)=>t+1),Kt=Array.from({length:60},(n,t)=>t),Yt=["AM","PM"],Xt=36;class Vt{constructor(t,e,s){l(this,"root");l(this,"onChange");l(this,"hour12");l(this,"minute");l(this,"period");l(this,"typeInput",null);l(this,"hourCol",null);l(this,"minuteCol",null);l(this,"periodCol",null);l(this,"syncing",!1);this.root=t,this.onChange=s;const i=I(e);this.hour12=i.hour12,this.minute=i.minute,this.period=i.period,this.render(),this.syncWheels(!1)}setTime24(t){const e=I(t);this.hour12=e.hour12,this.minute=e.minute,this.period=e.period,this.syncWheels(!1),this.syncTypeField()}getTime24(){return rt(this.hour12,this.minute,this.period)}destroy(){this.root.innerHTML=""}emit(){const t=this.getTime24();this.syncTypeField(),this.onChange(t)}syncTypeField(){this.typeInput&&(this.typeInput.value=H(this.getTime24()))}render(){var t,e,s,i,r,a;this.root.innerHTML=`
+      <div class="time-wheel-picker">
+        <div class="time-wheel-columns">
+          <div class="time-wheel-col" data-wheel="hour" tabindex="0"></div>
+          <div class="time-wheel-col" data-wheel="minute" tabindex="0"></div>
+          <div class="time-wheel-col time-wheel-col-period" data-wheel="period" tabindex="0"></div>
+          <div class="time-wheel-highlight" aria-hidden="true"></div>
+        </div>
+        <label class="time-wheel-type-label" for="time-wheel-type">Type a time</label>
+        <input
+          id="time-wheel-type"
+          class="time-wheel-type-input"
+          type="text"
+          inputmode="text"
+          autocomplete="off"
+          placeholder="6:30 AM"
+          value="${H(this.getTime24())}"
+        />
+      </div>
+    `,this.hourCol=this.root.querySelector('[data-wheel="hour"]'),this.minuteCol=this.root.querySelector('[data-wheel="minute"]'),this.periodCol=this.root.querySelector('[data-wheel="period"]'),this.typeInput=this.root.querySelector("#time-wheel-type"),this.hourCol&&this.fillColumn(this.hourCol,Ut.map(String),"hour"),this.minuteCol&&this.fillColumn(this.minuteCol,Kt.map(c=>String(c).padStart(2,"0")),"minute"),this.periodCol&&this.fillColumn(this.periodCol,Yt,"period"),(t=this.hourCol)==null||t.addEventListener("scroll",()=>this.onWheelScroll("hour"),{passive:!0}),(e=this.minuteCol)==null||e.addEventListener("scroll",()=>this.onWheelScroll("minute"),{passive:!0}),(s=this.periodCol)==null||s.addEventListener("scroll",()=>this.onWheelScroll("period"),{passive:!0}),(i=this.typeInput)==null||i.addEventListener("change",()=>this.onTypeCommit()),(r=this.typeInput)==null||r.addEventListener("blur",()=>this.onTypeCommit()),(a=this.typeInput)==null||a.addEventListener("keydown",c=>{c.key==="Enter"&&(c.preventDefault(),this.onTypeCommit(),c.target.blur())})}fillColumn(t,e,s){t.innerHTML=`<div class="time-wheel-spacer"></div>${e.map(i=>`<div class="time-wheel-item" data-kind="${s}" data-value="${i}">${i}</div>`).join("")}<div class="time-wheel-spacer"></div>`}scrollToValue(t,e,s){const i=t.querySelector(`[data-value="${e}"]`);if(!i)return;const r=i.offsetTop-t.clientHeight/2+Xt/2;t.scrollTo({top:r,behavior:s?"smooth":"auto"})}readWheel(t){const e=t.scrollTop+t.clientHeight/2,s=t.querySelectorAll(".time-wheel-item");let i=null,r=1/0;for(let a=0;a<s.length;a++){const c=s[a],u=c.offsetTop+c.offsetHeight/2,d=Math.abs(u-e);d<r&&(r=d,i=c)}return i?i.getAttribute("data-value")??"":""}onWheelScroll(t){if(this.syncing)return;const e=t==="hour"?this.hourCol:t==="minute"?this.minuteCol:this.periodCol;if(e){if(t==="hour"){const s=Number(this.readWheel(e));s>=1&&s<=12&&(this.hour12=s)}else if(t==="minute"){const s=Number(this.readWheel(e));s>=0&&s<=59&&(this.minute=s)}else{const s=this.readWheel(e);(s==="AM"||s==="PM")&&(this.period=s)}this.emit()}}onTypeCommit(){if(!this.typeInput)return;const t=Ft(this.typeInput.value);if(!t){this.syncTypeField();return}const e=I(t);this.hour12=e.hour12,this.minute=e.minute,this.period=e.period,this.syncWheels(!0),this.emit()}syncWheels(t){this.syncing=!0,this.hourCol&&this.scrollToValue(this.hourCol,String(this.hour12),t),this.minuteCol&&this.scrollToValue(this.minuteCol,String(this.minute).padStart(2,"0"),t),this.periodCol&&this.scrollToValue(this.periodCol,this.period,t),window.setTimeout(()=>{this.syncing=!1},t?200:0)}}class jt{constructor(t){l(this,"root");l(this,"screen","connect");l(this,"transport",null);l(this,"schedule",mt()??G());l(this,"status",{});l(this,"message","");l(this,"messageKind","");l(this,"busy",!1);l(this,"scheduleLoading",!1);l(this,"statusLoading",!1);l(this,"syncGeneration",0);l(this,"editingGroupId",null);l(this,"editDraft",null);l(this,"timePicker",null);l(this,"lampTestLevel",x);l(this,"lampTestSeconds",tt);l(this,"lampTestRemaining",0);l(this,"lampTestInterval",null);l(this,"lampTestExpanded",!1);this.root=t,this.render()}setMessage(t,e=""){this.message=t,this.messageKind=e,this.render()}async withBusy(t){this.busy=!0,this.render();try{await t()}catch(e){const s=e instanceof Error?e.message:String(e);this.setMessage(s,"error")}finally{this.busy=!1,this.render()}}async connectBle(){this.busy=!0,this.render();try{const t=new Mt;t.setOnDisconnect(e=>this.onTransportDisconnect(e)),await t.connect(),this.transport=t,this.screen="editor",this.status={},this.scheduleLoading=!0,this.statusLoading=!0,this.setMessage("Connected — loading schedule in background…","ok"),this.loadDeviceData(t,++this.syncGeneration)}catch(t){if(Ht(t))this.message="",this.messageKind="";else{const e=t instanceof Error?t.message:String(t);this.setMessage(e,"error")}}finally{this.busy=!1,this.render()}}async loadDeviceData(t,e){try{if(await It(t),e!==this.syncGeneration)return;const s=await P(t);if(e!==this.syncGeneration)return;const i=await W(t);if(e!==this.syncGeneration)return;this.schedule=O(s),w(this.schedule),this.status=i,this.setMessage("Schedule loaded from mask.","ok")}catch(s){if(e!==this.syncGeneration)return;const i=s instanceof Error?s.message:String(s);this.setMessage(`Sync failed: ${i}`,"error")}finally{e===this.syncGeneration&&(this.scheduleLoading=!1,this.statusLoading=!1,this.render())}}clearLampTestUi(){this.lampTestInterval!==null&&(clearInterval(this.lampTestInterval),this.lampTestInterval=null),this.lampTestRemaining=0}async cancelLampTestOnDevice(t){var e;if(this.clearLampTestUi(),t&&((e=this.transport)!=null&&e.connected))try{await Nt(this.transport)}catch{}this.render()}onTransportDisconnect(t){const e=this.lampTestInterval!==null||this.lampTestRemaining>0;this.clearLampTestUi(),!t&&e&&window.alert("Bluetooth disconnected during the brightness test. The lamp should be off — reconnect if you want to try again."),t||(this.syncGeneration++,this.transport=null,this.screen="connect",this.closeAlarmEdit(!1),this.status={},this.scheduleLoading=!1,this.statusLoading=!1,this.setMessage(e?"Connection lost during brightness test.":"Bluetooth disconnected.","error"))}async disconnect(){var t;try{await this.cancelLampTestOnDevice(!0)}finally{this.syncGeneration++,(t=this.transport)==null||t.disconnect(),this.transport=null,this.screen="connect",this.closeAlarmEdit(!1),this.status={},this.scheduleLoading=!1,this.statusLoading=!1,this.setMessage("")}}async tryLampBrightness(){var s;if(!((s=this.transport)!=null&&s.connected)||this.busy)return;const t=v(this.lampTestLevel),e=K(this.lampTestSeconds);this.lampTestLevel=t,this.lampTestSeconds=e,this.lampTestExpanded=!0,await this.withBusy(async()=>{await qt(this.transport,t,e),this.clearLampTestUi(),this.lampTestRemaining=e,this.lampTestInterval=window.setInterval(()=>{this.lampTestRemaining=Math.max(0,this.lampTestRemaining-1);const i=this.root.querySelector("#lamp-test-countdown"),r=this.root.querySelector(".lamp-test-toggle-hint");i&&(i.textContent=this.lampTestRemaining>0?`Testing… ${this.lampTestRemaining}s left`:"Test finished"),r&&(r.textContent=this.lampTestRemaining>0?`Testing… ${this.lampTestRemaining}s left`:"Test finished"),this.lampTestRemaining<=0&&(this.clearLampTestUi(),this.render())},1e3),this.setMessage(`Trying ${t}% brightness for ${e}s…`,"ok")})}syncLampTestSlider(t){const e=v(t);this.lampTestLevel=e;const s=this.root.querySelector("#lamp-test-level"),i=this.root.querySelector("#lamp-test-level-num");s&&(s.value=String(e)),i&&(i.value=String(e));const r=this.root.querySelector("#btn-lamp-test");r&&(r.textContent=`Try for ${this.lampTestSeconds}s`)}onLampTestNumberInput(t){const e=$(t.value);if(e===null)return;const s=v(e);this.lampTestLevel=s;const i=this.root.querySelector("#lamp-test-level");i&&(i.value=String(s));const r=this.root.querySelector("#btn-lamp-test");r&&(r.textContent=`Try for ${this.lampTestSeconds}s`)}commitLampTestNumber(t){const e=$(t.value);if(e===null){t.value=String(this.lampTestLevel);return}this.syncLampTestSlider(v(e))}toggleLampTestPanel(){this.lampTestExpanded=!this.lampTestExpanded,this.render()}commitAlarmEditForm(){var i,r;if(!this.editDraft)return!1;if(this.editDraft.days.length===0)return this.setMessage("Select at least one day for this alarm.","error"),!1;const t=this.root.querySelector("#edit-pwm-num");t&&this.commitEditBrightnessNumber(t);const e=Number(((i=this.root.querySelector("#edit-pre"))==null?void 0:i.value)??20),s=Number(((r=this.root.querySelector("#edit-hold"))==null?void 0:r.value)??20);return this.editDraft.slot.prewindowMin=e,this.editDraft.slot.postHoldMin=s,this.editDraft.slot.enabled=!0,this.schedule=St(this.schedule,this.editDraft.previousDays,this.editDraft.days,this.editDraft.slot),w(this.schedule),!0}closeAlarmEdit(t){var e;t&&!this.commitAlarmEditForm()||(this.editingGroupId=null,this.editDraft=null,(e=this.timePicker)==null||e.destroy(),this.timePicker=null,this.screen==="alarm-edit"&&(this.screen="editor",this.message="",this.messageKind="",this.render()))}openAlarmEdit(t){const e=L(this.schedule).find(s=>s.id===t);!e||st(e.slot)||(this.message="",this.messageKind="",this.editingGroupId=t,this.editDraft={previousDays:[...e.days],days:[...e.days],slot:{...e.slot}},this.screen="alarm-edit",this.render())}toggleGroupEnabled(t,e){e.stopPropagation(),this.schedule=wt(this.schedule,t,!t.slot.enabled),w(this.schedule),this.render()}addAlarm(){const{schedule:t,groupId:e}=Tt(this.schedule);this.schedule=t,w(this.schedule),this.openAlarmEdit(e)}async deleteEditingAlarm(){var e;if(!this.editingGroupId)return;const t=L(this.schedule).find(s=>s.id===this.editingGroupId);t&&(this.schedule=z(this.schedule,t),w(this.schedule),this.editingGroupId=null,this.editDraft=null,(e=this.timePicker)==null||e.destroy(),this.timePicker=null,this.screen="editor",this.render(),await this.pushScheduleToDevice("Alarm deleted."))}async deleteAlarmById(t){const e=L(this.schedule).find(s=>s.id===t);e&&(this.schedule=z(this.schedule,e),w(this.schedule),F(this.root),this.render(),await this.pushScheduleToDevice("Alarm deleted."))}async pushScheduleToDevice(t){if(!this.transport)return;if(!y.some(s=>this.schedule[s].enabled)){this.setMessage("Schedule updated locally. No alarms are enabled.","ok");return}await this.withBusy(async()=>{await kt(this.transport,this.schedule);const s=await P(this.transport),i=O(s);if(!pt(this.schedule,i))throw new Error("Device schedule does not match what was sent.");this.status=await W(this.transport),this.setMessage(t,"ok")})}async saveToDevice(){if(!this.transport)return;if(!y.some(e=>this.schedule[e].enabled)){this.setMessage("Enable at least one day before saving.","error");return}await this.pushScheduleToDevice("Schedule saved to mask.")}async refreshFromDevice(){this.transport&&await this.withBusy(async()=>{const t=await P(this.transport);this.schedule=O(t),w(this.schedule),this.status=await W(this.transport),this.setMessage("Reloaded from mask.","ok")})}setEditBrightnessFromSlider(t){if(!this.editDraft)return;const e=v(t);this.editDraft.slot.pwmMax=e;const s=this.root.querySelector("#edit-pwm-range"),i=this.root.querySelector("#edit-pwm-num");s&&(s.value=String(e)),i&&(i.value=String(e))}onEditBrightnessNumberInput(t){if(!this.editDraft)return;const e=$(t.value);if(e===null)return;const s=v(e);this.editDraft.slot.pwmMax=s;const i=this.root.querySelector("#edit-pwm-range");i&&(i.value=String(s))}commitEditBrightnessNumber(t){if(!this.editDraft)return;const e=$(t.value);if(e===null){t.value=String(this.editDraft.slot.pwmMax);return}const s=v(e);this.editDraft.slot.pwmMax=s;const i=this.root.querySelector("#edit-pwm-range");i&&(i.value=String(s)),t.value=String(s)}async saveAlarmEditToDevice(){var t;this.commitAlarmEditForm()&&(this.editingGroupId=null,this.editDraft=null,(t=this.timePicker)==null||t.destroy(),this.timePicker=null,this.screen="editor",this.render(),await this.pushScheduleToDevice("Schedule saved to mask."))}toggleEditDay(t){if(!this.editDraft)return;const e=new Set(this.editDraft.days);if(e.has(t)){if(e.size<=1)return;e.delete(t)}else e.add(t);this.editDraft.days=Y.filter(s=>e.has(s)),this.render()}renderActionBar(){return`
+      <div class="save-bar">
+        <div class="inner">
+          <button class="btn btn-secondary" id="btn-disconnect" ${this.busy?"disabled":""}>Disconnect</button>
+          <button class="btn btn-secondary" id="btn-refresh" ${this.busy||this.scheduleLoading?"disabled":""}>Reload</button>
+          <button class="btn btn-primary" id="btn-save" ${this.busy||this.scheduleLoading?"disabled":""}>Save to mask</button>
+        </div>
+      </div>
+    `}renderConnect(){const t=Rt(),e=Pt(),s=window.location.href;return`
+      <h1>Sleep Mask Programmer</h1>
+      <p class="subtitle">Set your week of wake-up alarms over Bluetooth. No account required.</p>
+
+      ${t?`<div class="card warn">
+        <h2>iPhone detected</h2>
+        <p>Safari, Chrome, and other browsers on iPhone do not support Web Bluetooth. Install the free <strong>Bluefy</strong> browser, then open this page there:</p>
+        <p><a href="https://apps.apple.com/us/app/bluefy-web-ble-browser/id1492822055" target="_blank" rel="noopener">Get Bluefy on the App Store</a></p>
+        <p style="word-break:break-all">${s}</p>
+      </div>`:""}
+
+      ${!t&&!U()?`<div class="card warn">
+        <h2>Browser not supported</h2>
+        <p>Use <strong>Chrome</strong> or <strong>Edge</strong> on Android or desktop. Firefox cannot connect via Bluetooth.</p>
+        <p>On iPhone, Safari and Chrome do not support Web Bluetooth — use <strong>Bluefy</strong> instead.</p>
+      </div>`:""}
+
+      <div class="card">
+        <h2>Before you connect</h2>
+        <ol class="connect-steps">
+          <li>Ensure the mask is charged, powered on, and within a few meters.</li>
+          <li>If the mask does not appear, wake it by holding the snooze button for 3 seconds.</li>
+          <li>Click Connect below.</li>
+          <li>Look for a device named <strong>SleepMask-XXXX</strong>.</li>
+        </ol>
+      </div>
+
+      ${e?`<button class="btn btn-primary" id="btn-connect" ${this.busy?"disabled":""}>
+        Connect via Bluetooth
+      </button>`:""}
+
+      ${this.message?`<p class="message ${this.messageKind}">${this.message}</p>`:""}
+    `}renderAlarmListRow(t){const{slot:e,days:s,id:i}=t,r=e.enabled?"":" off";return`
+      <div class="alarm-swipe" data-alarm-id="${i}">
+        <button
+          type="button"
+          class="alarm-swipe-delete"
+          data-alarm-id="${i}"
+          aria-label="Delete alarm"
+        >Delete</button>
+        <div class="alarm-row alarm-row-panel${r}" data-alarm-id="${i}">
+          <div class="alarm-row-main">
+            <div class="alarm-time">${H(e.time)}</div>
+            <div class="alarm-subtitle">${yt(s)}</div>
+            <div class="alarm-subtitle alarm-subtitle-detail">${bt(e)}</div>
+          </div>
+          <div
+            class="toggle ${e.enabled?"on":""}"
+            data-action="group-toggle"
+            data-alarm-id="${i}"
+            role="switch"
+            aria-checked="${e.enabled}"
+          ></div>
+        </div>
+      </div>
+    `}renderBrightnessTestCard(){const t=this.lampTestInterval!==null,e=t&&this.lampTestRemaining>0?`Testing… ${this.lampTestRemaining}s left`:t?"Test finished":"",s=t?e:"Optional — try brightness on the mask";return`
+      <div class="card lamp-test-card ${this.lampTestExpanded?"open":""}">
+        <button
+          type="button"
+          class="lamp-test-toggle"
+          id="btn-lamp-test-toggle"
+          aria-expanded="${this.lampTestExpanded}"
+        >
+          <div class="lamp-test-toggle-text">
+            <h2>Find your brightness</h2>
+            <p class="lamp-test-toggle-hint">${s}</p>
+          </div>
+          <span class="lamp-test-chevron" aria-hidden="true">▾</span>
+        </button>
+        <div class="lamp-test-body">
+          <p class="lamp-test-hint">Try a level on the mask before saving your schedule. Start at 50% — most people land between 40% and 70%.</p>
+          <label for="lamp-test-level">Brightness</label>
+          <div class="brightness-controls">
+            <input
+              type="range"
+              id="lamp-test-level"
+              min="${T}"
+              max="${E}"
+              value="${this.lampTestLevel}"
+              ${t||this.busy?"disabled":""}
+            />
+            <input
+              type="number"
+              id="lamp-test-level-num"
+              min="${T}"
+              max="${E}"
+              value="${this.lampTestLevel}"
+              aria-label="Brightness percent"
+              ${t||this.busy?"disabled":""}
+            />
+            <span class="brightness-unit">%</span>
+          </div>
+          <div class="field-row">
+            <div>
+              <label for="lamp-test-seconds">Duration (seconds)</label>
+              <input
+                type="number"
+                id="lamp-test-seconds"
+                min="${Q}"
+                max="${Z}"
+                value="${this.lampTestSeconds}"
+                ${t||this.busy?"disabled":""}
+              />
+            </div>
+          </div>
+          <div class="lamp-test-actions">
+            <button
+              class="btn btn-primary"
+              type="button"
+              id="btn-lamp-test"
+              ${t||this.busy?"disabled":""}
+            >
+              Try for ${this.lampTestSeconds}s
+            </button>
+            ${t?`<button class="btn btn-secondary" type="button" id="btn-lamp-cancel" ${this.busy?"disabled":""}>Cancel</button>`:""}
+          </div>
+          ${e&&this.lampTestExpanded?`<p class="lamp-test-countdown" id="lamp-test-countdown">${e}</p>`:""}
+        </div>
+      </div>
+    `}renderEditor(){var s,i;const t=this.scheduleLoading,e=j(this.schedule);return`
+      <h1>Alarms</h1>
+      <p class="subtitle">${(s=this.transport)!=null&&s.connected?"Connected":"Disconnected"}</p>
+
+      ${t?`<div class="card sync-banner">
+        <span class="spinner" aria-hidden="true"></span>
+        Syncing schedule from mask…
+      </div>`:""}
+
+      <div class="card status-bar ${this.statusLoading?"loading":""}">
+        ${this.statusLoading?'<div class="muted">Loading device status…</div>':`
+        ${this.status.rtc?`<div>Clock: <strong>${this.status.rtc}</strong></div>`:""}
+        ${this.status.nextRamp?`<div>Next ramp: <strong>${this.status.nextRamp}</strong></div>`:""}
+        ${this.status.preMin?`<div>Ramp: <strong>${this.status.preMin} min</strong></div>`:""}
+        ${this.status.postHoldMin?`<div>Hold after alarm: <strong>${this.status.postHoldMin} min</strong></div>`:""}
+        ${this.status.nvmOk!==void 0?`<div>Saved: <strong>${this.status.nvmOk?"yes":"no"}</strong></div>`:""}
+        `}
+      </div>
+
+      ${(i=this.transport)!=null&&i.connected?this.renderBrightnessTestCard():""}
+
+      <div class="alarm-list-card ${t?"loading":""}">
+        ${e.map(r=>this.renderAlarmListRow(r)).join("")}
+      </div>
+
+      <button class="btn-add-alarm" type="button" id="btn-add-alarm" ${t||this.busy?"disabled":""}>
+        <span class="btn-add-icon" aria-hidden="true">+</span> Add Alarm
+      </button>
+
+      ${this.renderActionBar()}
+      <div class="page-bottom-spacer"></div>
+      ${this.message?`<p class="message ${this.messageKind}">${this.message}</p>`:""}
+    `}renderAlarmEdit(){if(!this.editDraft)return"";const{slot:t,days:e}=this.editDraft,s=new Set(e);return`
+      <div class="alarm-edit-sheet">
+        <div class="alarm-edit-nav">
+          <button type="button" class="alarm-edit-nav-btn" id="btn-edit-cancel">Cancel</button>
+          <span class="alarm-edit-title">Edit Alarm</span>
+          <button type="button" class="alarm-edit-nav-btn alarm-edit-done" id="btn-edit-done">Save</button>
+        </div>
+
+        <div id="time-wheel-mount"></div>
+
+        <div class="alarm-edit-section">
+          <div class="alarm-edit-section-label">Repeat</div>
+          <div class="repeat-row">
+            ${Y.map(i=>`
+              <button
+                type="button"
+                class="repeat-chip ${s.has(i)?"on":""}"
+                data-repeat-day="${i}"
+              >${ut[i]}</button>`).join("")}
+          </div>
+        </div>
+
+        <div class="alarm-edit-section">
+          <label>Brightness</label>
+          <div class="brightness-controls">
+            <input
+              type="range"
+              id="edit-pwm-range"
+              min="${T}"
+              max="${E}"
+              value="${t.pwmMax}"
+            />
+            <input
+              type="number"
+              id="edit-pwm-num"
+              min="${T}"
+              max="${E}"
+              value="${t.pwmMax}"
+              aria-label="Brightness percent"
+            />
+            <span class="brightness-unit">%</span>
+          </div>
+        </div>
+
+        <div class="alarm-edit-section field-row">
+          <div>
+            <label for="edit-pre">Ramp before (min)</label>
+            <input type="number" id="edit-pre" min="1" max="240" value="${t.prewindowMin}" />
+          </div>
+          <div>
+            <label for="edit-hold">Hold after (min)</label>
+            <input type="number" id="edit-hold" min="1" max="240" value="${t.postHoldMin}" />
+          </div>
+        </div>
+
+        <button type="button" class="btn-delete-alarm" id="btn-delete-alarm">Delete Alarm</button>
+
+        <div class="page-bottom-spacer"></div>
+        ${this.message?`<p class="message ${this.messageKind}">${this.message}</p>`:""}
+      </div>
+      ${this.renderActionBar()}
+    `}render(){var t;(t=this.timePicker)==null||t.destroy(),this.timePicker=null,this.screen==="connect"?this.root.innerHTML=this.renderConnect():this.screen==="alarm-edit"?this.root.innerHTML=this.renderAlarmEdit():this.root.innerHTML=this.renderEditor(),F(this.root),this.bindEvents()}bindEvents(){if(this.screen==="connect"){this.bindConnectEvents();return}if(this.screen==="alarm-edit"){this.bindAlarmEditEvents();return}this.bindEditorEvents()}bindConnectEvents(){var t;(t=this.root.querySelector("#btn-connect"))==null||t.addEventListener("click",()=>void this.connectBle())}bindActionBarEvents(t){var e,s,i;(e=this.root.querySelector("#btn-disconnect"))==null||e.addEventListener("click",()=>void this.disconnect()),(s=this.root.querySelector("#btn-refresh"))==null||s.addEventListener("click",()=>void this.refreshFromDevice()),(i=this.root.querySelector("#btn-save"))==null||i.addEventListener("click",()=>void t())}bindEditorEvents(){var s,i,r,a,c,u;this.bindActionBarEvents(()=>this.saveToDevice()),(s=this.root.querySelector("#btn-add-alarm"))==null||s.addEventListener("click",()=>this.addAlarm());const t=j(this.schedule);Gt(this.root,{onDelete:d=>void this.deleteAlarmById(d),onTap:d=>this.openAlarmEdit(d)}),this.root.querySelectorAll("[data-action='group-toggle']").forEach(d=>{d.addEventListener("click",m=>{const p=d.dataset.alarmId,g=t.find(b=>b.id===p);g&&this.toggleGroupEnabled(g,m)})}),(i=this.root.querySelector("#btn-lamp-test-toggle"))==null||i.addEventListener("click",()=>{this.toggleLampTestPanel()}),(r=this.root.querySelector("#lamp-test-level"))==null||r.addEventListener("input",d=>{this.syncLampTestSlider(Number(d.target.value))});const e=this.root.querySelector("#lamp-test-level-num");e==null||e.addEventListener("input",()=>this.onLampTestNumberInput(e)),e==null||e.addEventListener("change",()=>this.commitLampTestNumber(e)),e==null||e.addEventListener("blur",()=>this.commitLampTestNumber(e)),(a=this.root.querySelector("#lamp-test-seconds"))==null||a.addEventListener("change",d=>{const m=d.target;this.lampTestSeconds=K(Number(m.value)),m.value=String(this.lampTestSeconds);const p=this.root.querySelector("#btn-lamp-test");p&&(p.textContent=`Try for ${this.lampTestSeconds}s`)}),(c=this.root.querySelector("#btn-lamp-test"))==null||c.addEventListener("click",()=>void this.tryLampBrightness()),(u=this.root.querySelector("#btn-lamp-cancel"))==null||u.addEventListener("click",()=>{this.cancelLampTestOnDevice(!0),this.setMessage("Brightness test cancelled.","ok")})}bindAlarmEditEvents(){var s,i,r,a;if(!this.editDraft)return;const t=this.root.querySelector("#time-wheel-mount");t&&(this.timePicker=new Vt(t,this.editDraft.slot.time,c=>{this.editDraft&&(this.editDraft.slot.time=c)})),(s=this.root.querySelector("#btn-edit-cancel"))==null||s.addEventListener("click",()=>this.closeAlarmEdit(!1)),(i=this.root.querySelector("#btn-edit-done"))==null||i.addEventListener("click",()=>void this.saveAlarmEditToDevice()),this.bindActionBarEvents(()=>this.saveAlarmEditToDevice()),(r=this.root.querySelector("#btn-delete-alarm"))==null||r.addEventListener("click",()=>{window.confirm("Delete this alarm?")&&this.deleteEditingAlarm()}),this.root.querySelectorAll("[data-repeat-day]").forEach(c=>{c.addEventListener("click",()=>{const u=c.dataset.repeatDay;this.toggleEditDay(u)})}),(a=this.root.querySelector("#edit-pwm-range"))==null||a.addEventListener("input",c=>{this.setEditBrightnessFromSlider(Number(c.target.value))});const e=this.root.querySelector("#edit-pwm-num");e==null||e.addEventListener("input",()=>this.onEditBrightnessNumberInput(e)),e==null||e.addEventListener("change",()=>this.commitEditBrightnessNumber(e)),e==null||e.addEventListener("blur",()=>this.commitEditBrightnessNumber(e))}}const J=document.getElementById("app");J&&new jt(J);
