@@ -71,7 +71,7 @@ While both are active, the earlier alarm wins until dismissed. Save anyway?`}fun
         <h2>Before you connect</h2>
         <ol class="connect-steps">
           <li>Ensure the mask is charged, powered on, and within a few meters.</li>
-          <li>If the mask does not appear, wake it by holding the snooze button for 3 seconds.</li>
+          <li>If the mask does not appear, wake it by holding the alarm dismiss button for 3 seconds.</li>
           <li>Click Connect below.</li>
           <li>Look for a device named <strong>SleepMask-XXXX</strong>.</li>
         </ol>
