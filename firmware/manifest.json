@@ -4,11 +4,11 @@
     {
       "channel": "esp32s3_ble",
       "hwRev": "supermini-B-beta-ble",
-      "version": "0.3.3",
+      "version": "0.3.4",
       "minVersion": "0.3.0",
-      "file": "sleepmask-esp32s3_ble-0.3.3.bin",
-      "size": 1033728,
-      "sha256": "8b9a908308ff12a3ffc6932852d8409edc36dacb5230ac87e7d4cc02699f73ae"
+      "file": "sleepmask-esp32s3_ble-0.3.4.bin",
+      "size": 1035296,
+      "sha256": "33a7a61df42c0795f0aef16e9d2f607dcf2e8398397a22b53a423143fddbd749"
     }
   ]
 }
