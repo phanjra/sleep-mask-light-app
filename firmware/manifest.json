@@ -4,22 +4,11 @@
     {
       "channel": "esp32s3_ble",
       "hwRev": "supermini-B-beta-ble",
-      "version": "0.3.9",
+      "version": "0.3.10",
       "minVersion": "0.3.0",
-      "file": "sleepmask-esp32s3_ble-0.3.9.bin",
-      "size": 638752,
-      "sha256": "035f84532dfd36fb1cb4067a91ed93ab322b471b83edf39d5741f765aa8b22e7",
-      "patches": [
-        {
-          "fromVersion": "0.3.8",
-          "fromSha256": "04b6174d63adfeaae219565a71e4e58476e97fd5b81ab044e81d8598a8a3d517",
-          "fromSize": 638752,
-          "file": "sleepmask-esp32s3_ble-0.3.8-to-0.3.9.patch.z",
-          "size": 797,
-          "patchSize": 638764,
-          "sha256": "b37406882efa38fae2239746d1cb2cc10e269f8c1944138331b7425bc4c7e196"
-        }
-      ]
+      "file": "sleepmask-esp32s3_ble-0.3.10.bin",
+      "size": 638768,
+      "sha256": "59683643fd3e4ece89c62e3694763d5ec10d7054870b8767b5d50a8f69cf38c0"
     }
   ]
 }
